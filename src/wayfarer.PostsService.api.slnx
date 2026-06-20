@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="wayfarer.PostsService.api/wayfarer.PostsService.api.csproj" />
+  <Project Path="wayfarer.PostsService.DataAccess/wayfarer.PostsService.DataAccess.csproj" Id="1dfee87f-c015-4be3-89f4-58a6517d4d56" />
+</Solution>

@@ -1,0 +1,6 @@
+@wayfarer.PostsService.api_HostAddress = http://localhost:5296
+
+GET {{wayfarer.PostsService.api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
