@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wayfarer-posts-config
+  namespace: default
+data:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: wayfarerDB
+  DB_USER: postgres
+  ASPNETCORE_ENVIRONMENT: Production

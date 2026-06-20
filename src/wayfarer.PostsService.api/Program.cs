@@ -14,9 +14,14 @@ namespace wayfarer.PostsService.api
 
             // Add services to the container.
 
-            // UseNpgsql
+            // UseNpgsql with environment variable expansion
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = Environment.ExpandEnvironmentVariables(connectionString);
+            }
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(connectionString));
 
             // Registering Unit of Work maps everything correctly
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
