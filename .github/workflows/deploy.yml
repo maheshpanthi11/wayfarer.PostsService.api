@@ -1,11 +1,11 @@
-name: Deploy to GKE
+name: Wayfarer PostsService CD
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  deployment:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -13,13 +13,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GKE_SA_KEY }}
-
-      - name: Set up Cloud SDK
+      - name: Set up gcloud SDK and install GKE auth plugin
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          export_default_credentials: true
+          components: gke-gcloud-auth-plugin
+
+      - name: Enable GKE auth plugin for kubectl
+        run: |
+          gcloud config set auth/use_gke_gcloud_auth_plugin true
 
       - name: Configure kubectl
         run: |
