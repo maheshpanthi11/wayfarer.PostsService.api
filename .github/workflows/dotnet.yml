@@ -50,7 +50,8 @@ jobs:
     - name: Build and Push
       uses: docker/build-push-action@v6
       with:
-        context: ./src/wayfarer.PostsService.api
+        context: ./src
+        file: ./wayfarer.PostsService.api/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/wayfarer-posts-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/wayfarer-posts-service:${{ github.sha }}
         cache-from: type=gha
