@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -28,6 +26,7 @@ jobs:
       run: dotnet test ./src/wayfarer.PostsService.api.slnx --no-build --verbosity normal
 
   build-and-push:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:

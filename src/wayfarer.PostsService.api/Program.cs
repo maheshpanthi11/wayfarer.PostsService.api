@@ -35,8 +35,10 @@ namespace wayfarer.PostsService.api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseDeveloperExceptionPage();
             }
+
+            app.MapOpenApi();
 
             // Wire up Swagger UI to read the native OpenAPI document
             app.UseSwaggerUI(options =>

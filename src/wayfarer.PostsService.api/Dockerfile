@@ -6,6 +6,9 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
+RUN apt-get update \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libkrb5-3 \
+	&& rm -rf /var/lib/apt/lists/*
 
 
 # This stage is used to build the service project
