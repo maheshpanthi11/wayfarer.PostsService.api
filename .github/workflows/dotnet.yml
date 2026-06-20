@@ -21,11 +21,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./src/wayfarer.PostsService.api.slnx
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ./src/wayfarer.PostsService.api.slnx --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal 
+      run: dotnet test ./src/wayfarer.PostsService.api.slnx --no-build --verbosity normal
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
     - name: Build and Push
       uses: docker/build-push-action@v6
       with:
-        context: .
+        context: ./src/wayfarer.PostsService.api
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/wayfarer-posts-service:latest,${{ secrets.DOCKERHUB_USERNAME }}/wayfarer-posts-service:${{ github.sha }}
         cache-from: type=gha
