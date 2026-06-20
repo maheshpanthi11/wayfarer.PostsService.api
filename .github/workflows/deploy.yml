@@ -1,11 +1,15 @@
 name: Wayfarer PostsService CD
 
+# Trigger this CD workflow only after the CI workflow completes successfully
 on:
-  push:
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["Wayfarer PostsService CI"]
+    types:
+      - completed
 
 jobs:
   deployment:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -31,9 +35,14 @@ jobs:
             --zone ${{ secrets.GKE_ZONE }} \
             --project ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Deploy to GKE
+      - name: Deploy to GKE using image from CI
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
         run: |
-          kubectl apply -f deployment/
+          # Update deployment image to the image pushed by CI (tagged with commit sha)
+          kubectl set image deployment/wayfarer-posts-service \
+            wayfarer-posts-service=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG} --record
           kubectl rollout status deployment/wayfarer-posts-service -n default --timeout=5m
 
       - name: Verify Deployment
