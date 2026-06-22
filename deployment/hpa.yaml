@@ -9,7 +9,7 @@ spec:
     kind: Deployment
     name: wayfarer-posts-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 10
   metrics:
   - type: Resource
     resource:
@@ -23,3 +23,10 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30  # 30-second cool down before scaling down
+      policies:
+      - type: Percent
+        value: 100                    # Allows scaling down up to 100% of pods
+        periodSeconds: 15   
