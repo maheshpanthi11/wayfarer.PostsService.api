@@ -23,8 +23,4 @@
     <ProjectReference Include="..\wayfarer.PostsService.DataAccess\wayfarer.PostsService.DataAccess.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 </Project>

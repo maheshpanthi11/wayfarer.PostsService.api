@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using wayfarer.PostsService.api.Model;
 using wayfarer.PostsService.api.Service;
 using wayfarer.PostsService.DataAccess.DataModels;
 
@@ -24,9 +25,10 @@ namespace wayfarer.PostsService.api.Controllers
         }
 
         [HttpPost(Name = "SavePost")]
-        public IActionResult Post([FromBody] Post post)
+        public async Task<IActionResult> Post([FromBody] PostBO post)
         {
-            return Ok("Hello World");
+            var result = await _postService.SavePost(post);
+            return Ok(result);
         }
     }
 }
