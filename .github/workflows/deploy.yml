@@ -51,6 +51,10 @@ jobs:
 
       - name: Configure kubectl
         run: |
+          # ensure project is set and credentials are active
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud auth list --filter=status:ACTIVE --format="value(account)"
+          gcloud auth print-access-token >/dev/null
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
             --zone ${{ secrets.GKE_ZONE }} \
             --project ${{ secrets.GCP_PROJECT_ID }}
@@ -77,9 +81,23 @@ jobs:
           IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
         run: |
           # Update deployment image to the image pushed by CI (tagged with commit sha)
-          kubectl set image deployment/wayfarer-posts-service \
-            wayfarer-posts-service=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG} --record -n wayfarer
-          kubectl rollout status deployment/wayfarer-posts-service -n wayfarer --timeout=5m
+          DEPLOY=wayfarer-posts-service
+          NAMESPACE=wayfarer
+          IMAGE=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG}
+
+          if kubectl get deployment ${DEPLOY} -n ${NAMESPACE} >/dev/null 2>&1; then
+            echo "Updating image on existing deployment ${DEPLOY}..."
+            kubectl set image deployment/${DEPLOY} \
+              wayfarer-posts-service=${IMAGE} -n ${NAMESPACE}
+            kubectl rollout status deployment/${DEPLOY} -n ${NAMESPACE} --timeout=5m
+          else
+            echo "Deployment ${DEPLOY} not found in namespace ${NAMESPACE}; applying manifests..."
+            kubectl apply -f deployment/ -n ${NAMESPACE}
+            # attempt to update image (deployment manifest may contain placeholder)
+            kubectl set image deployment/${DEPLOY} \
+              wayfarer-posts-service=${IMAGE} -n ${NAMESPACE} || true
+            kubectl rollout status deployment/${DEPLOY} -n ${NAMESPACE} --timeout=5m
+          fi
 
       - name: Verify Deployment
         run: |
