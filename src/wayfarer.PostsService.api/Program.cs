@@ -20,7 +20,7 @@ namespace wayfarer.PostsService.api
             {
                 connectionString = Environment.ExpandEnvironmentVariables(connectionString);
             }
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services. AddDbContextPool<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString));
 
             // Registering Unit of Work maps everything correctly
