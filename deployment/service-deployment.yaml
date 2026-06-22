@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wayfarer-posts-service
-  namespace: default
+  namespace: wayfarer
   labels:
     app: wayfarer-posts-service
 spec:
@@ -20,6 +20,39 @@ spec:
       labels:
         app: wayfarer-posts-service
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: PGUSER
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_USER
+        - name: PGHOST
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_HOST
+        - name: PGPORT
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_PORT
+        command:
+        - sh
+        - -c
+        - |
+          echo "waiting for postgres at ${PGHOST}:${PGPORT}..."
+          until pg_isready -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}"; do
+            sleep 2
+          done
       containers:
       - name: wayfarer-posts-service
         image: maheshpanthi079/wayfarer-posts-service:latest
@@ -31,15 +64,34 @@ spec:
         - name: https
           containerPort: 8081
           protocol: TCP
-        envFrom:
-        - configMapRef:
-            name: wayfarer-posts-config
         env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: wayfarer-posts-config
+              key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: postgres-secret
               key: POSTGRES_PASSWORD
+        - name: ConnectionStrings__DefaultConnection
+          value: "Server=$(DB_HOST);Port=$(DB_PORT);Database=$(DB_NAME);Uid=$(DB_USER);Pwd=$(DB_PASSWORD);"
         livenessProbe:
           httpGet:
             path: /

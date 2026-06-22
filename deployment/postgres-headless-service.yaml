@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-headless
-  namespace: default
+  namespace: wayfarer
 spec:
   clusterIP: None
   selector:

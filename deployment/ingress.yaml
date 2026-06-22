@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wayfarer-posts-ingress
-  namespace: default
+  namespace: wayfarer
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:

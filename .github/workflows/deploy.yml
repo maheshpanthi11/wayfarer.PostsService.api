@@ -35,6 +35,22 @@ jobs:
             --zone ${{ secrets.GKE_ZONE }} \
             --project ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Ensure `wayfarer` namespace exists
+        run: |
+          kubectl create namespace wayfarer --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create DB secret from GitHub Secrets (idempotent)
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        run: |
+          kubectl create secret generic postgres-secret --namespace wayfarer \
+            --from-literal=POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
+            --from-literal=POSTGRES_USER="${POSTGRES_USER}" \
+            --from-literal=POSTGRES_DB="${POSTGRES_DB}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Deploy to GKE using image from CI
         env:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -42,10 +58,10 @@ jobs:
         run: |
           # Update deployment image to the image pushed by CI (tagged with commit sha)
           kubectl set image deployment/wayfarer-posts-service \
-            wayfarer-posts-service=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG} --record
-          kubectl rollout status deployment/wayfarer-posts-service -n default --timeout=5m
+            wayfarer-posts-service=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG} --record -n wayfarer
+          kubectl rollout status deployment/wayfarer-posts-service -n wayfarer --timeout=5m
 
       - name: Verify Deployment
         run: |
           echo "Deployment completed"
-          kubectl get all -n default
+          kubectl get all -n wayfarer

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-config
-  namespace: default
+  namespace: wayfarer
 data:
   POSTGRES_DB: wayfarerDB
   POSTGRES_USER: postgres
