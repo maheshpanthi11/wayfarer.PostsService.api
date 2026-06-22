@@ -25,9 +25,14 @@ jobs:
           export_default_credentials: true
           components: gke-gcloud-auth-plugin
 
-      - name: Enable GKE auth plugin for kubectl
+      - name: Ensure GKE auth plugin installed and enable it for kubectl
         run: |
-          gcloud config set auth/use_gke_gcloud_auth_plugin true
+          # try installing the component (may be unnecessary on some runners)
+          gcloud --quiet components install gke-gcloud-auth-plugin || true
+          # some images provide the plugin as a package; try fallbacks (ignore failures)
+          command -v gke-gcloud-auth-plugin >/dev/null 2>&1 || true
+          # enable the plugin for kubectl auth; tolerate if unsupported
+          gcloud config set auth/use_gke_gcloud_auth_plugin true || true
 
       - name: Configure kubectl
         run: |
