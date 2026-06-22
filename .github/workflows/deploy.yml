@@ -17,6 +17,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Authenticate to Google Cloud (service account)
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+
       - name: Set up gcloud SDK and install GKE auth plugin
         uses: google-github-actions/setup-gcloud@v2
         with:
@@ -33,6 +38,20 @@ jobs:
           command -v gke-gcloud-auth-plugin >/dev/null 2>&1 || true
           # enable the plugin for kubectl auth; tolerate if unsupported
           gcloud config set auth/use_gke_gcloud_auth_plugin true || true
+
+      - name: Authenticate service account for gcloud (explicit)
+        env:
+          GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+        run: |
+          # write service account key to file and activate it
+          printf '%s' "${GKE_SA_KEY}" > sa-key.json
+          gcloud auth activate-service-account --key-file=sa-key.json
+          SA_EMAIL=$(python - <<'PY'
+import json,sys
+print(json.load(open('sa-key.json'))['client_email'])
+PY
+)
+          gcloud config set account "$SA_EMAIL"
 
       - name: Configure kubectl
         run: |
