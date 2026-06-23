@@ -51,8 +51,9 @@ namespace wayfarer.PostsService.api
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "Wayfarer.PostsService.api v1");
             });
-
-            app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
+            
+            app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }))
+                .ExcludeFromDescription();
 
             app.MapGet("/", async context =>
             {
