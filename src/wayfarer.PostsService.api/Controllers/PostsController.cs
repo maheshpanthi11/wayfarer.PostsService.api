@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using wayfarer.PostsService.api.Model;
 using wayfarer.PostsService.api.Service;
-using wayfarer.PostsService.DataAccess.DataModels;
 
 namespace wayfarer.PostsService.api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
         private readonly IPostService _postService;

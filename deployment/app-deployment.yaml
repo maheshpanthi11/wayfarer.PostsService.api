@@ -6,7 +6,7 @@ metadata:
   labels:
     app: wayfarer-posts-service
 spec:
-  replicas: 2
+  replicas: 4
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -94,7 +94,7 @@ spec:
           value: "Server=$(DB_HOST);Port=$(DB_PORT);Database=$(DB_NAME);Uid=$(DB_USER);Pwd=$(DB_PASSWORD);"
         livenessProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: http
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -102,7 +102,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /healthz
             port: http
           initialDelaySeconds: 10
           periodSeconds: 5

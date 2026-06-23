@@ -85,19 +85,10 @@ jobs:
           NAMESPACE=wayfarer
           IMAGE=${DOCKERHUB_USER}/wayfarer-posts-service:${IMAGE_TAG}
 
-          if kubectl get deployment ${DEPLOY} -n ${NAMESPACE} >/dev/null 2>&1; then
-            echo "Updating image on existing deployment ${DEPLOY}..."
-            kubectl set image deployment/${DEPLOY} \
-              wayfarer-posts-service=${IMAGE} -n ${NAMESPACE}
-            kubectl rollout status deployment/${DEPLOY} -n ${NAMESPACE} --timeout=5m
-          else
-            echo "Deployment ${DEPLOY} not found in namespace ${NAMESPACE}; applying manifests..."
-            kubectl apply -f deployment/ -n ${NAMESPACE}
-            # attempt to update image (deployment manifest may contain placeholder)
-            kubectl set image deployment/${DEPLOY} \
-              wayfarer-posts-service=${IMAGE} -n ${NAMESPACE} || true
-            kubectl rollout status deployment/${DEPLOY} -n ${NAMESPACE} --timeout=5m
-          fi
+          kubectl apply -f deployment/
+          kubectl set image deployment/${DEPLOY} \
+            wayfarer-posts-service=${IMAGE} -n ${NAMESPACE}
+          kubectl rollout status deployment/${DEPLOY} -n ${NAMESPACE} --timeout=5m
 
       - name: Verify Deployment
         run: |

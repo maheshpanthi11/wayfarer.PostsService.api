@@ -6,7 +6,7 @@ metadata:
   labels:
     app: wayfarer-posts-service
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: wayfarer-posts-service
   ports:

@@ -41,6 +41,7 @@ namespace wayfarer.PostsService.api
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseHttpsRedirection();
             }
 
             app.MapOpenApi();
@@ -50,6 +51,8 @@ namespace wayfarer.PostsService.api
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "Wayfarer.PostsService.api v1");
             });
+
+            app.MapGet("/healthz", () => Results.Ok(new { status = "ok" }));
 
             app.MapGet("/", async context =>
             {
@@ -65,8 +68,6 @@ namespace wayfarer.PostsService.api
                 dbContext.Database.EnsureCreated();
                 dbContext.Database.Migrate();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

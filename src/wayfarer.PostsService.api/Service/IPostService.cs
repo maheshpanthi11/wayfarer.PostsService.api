@@ -7,6 +7,8 @@ namespace wayfarer.PostsService.api.Service
     {
         Task<IEnumerable<Post>> GetPostsByUserId(long userId);
 
+        Task<IEnumerable<Post>> GetPosts();
+
         Task<Post> SavePost(PostBO postBo);
     }
 }

@@ -18,6 +18,11 @@ namespace wayfarer.PostsService.api.Service
             return await _repository.GetByExpression(p => p.UserId == userId);
         }
 
+        public async Task<IEnumerable<Post>> GetPosts()
+        {
+            return await _repository.GetAllAsync();
+        }
+
         public async Task<Post> SavePost(PostBO postBo)
         {
             try
