@@ -3,8 +3,9 @@ kind: Ingress
 metadata:
   name: wayfarer-posts-ingress
   namespace: wayfarer
+  annotations:
+    kubernetes.io/ingress.class: "gce"
 spec:
-  ingressClassName: "gce" 
   rules:
   - http:
       paths:
