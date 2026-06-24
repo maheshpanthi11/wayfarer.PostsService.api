@@ -94,7 +94,4 @@ jobs:
         run: |
           echo "Deployment completed"
           kubectl get all -n wayfarer
-
-      - name: Print Service API external Address
-        run: |
-          kubectl get ingress -n ${NAMESPACE}
+          kubectl get ingress -n wayfarer
